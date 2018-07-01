@@ -2,7 +2,7 @@
 // 程序的入口
 
 const express = require('express');
-
+const session = require('express-session')  //  session 包
 
 const app =  express();
 const art = require('express-art-template');
@@ -20,9 +20,16 @@ const router = require('./routes/router')  //  导入路由   挂起路由
 
 // 配置body-parser
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+
+// 配置session -----------------    在登录成功时设置session
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: true
+}))
 
 
 var port = 3000;

@@ -18,8 +18,11 @@ exports.creatUser = (user, callback) => {
         }
     )
 }
+
+
 // 根据Email查询数据    注册用户时 使用
 exports.getByEmail = (email, callback) => {
+    console.log('123');
     db.query(
         'select * from `users` where `email`=?',
         email,
@@ -42,11 +45,14 @@ exports.getByEmail = (email, callback) => {
 }
 // 根据nickname查询数据   注册时  使用
 
-exports.getByNickname = (email, callback) => {
+exports.getByNickname = (nickname, callback) => {
+    // console.log('000000----0');
+    
     db.query(
         'select * from `users` where `nickname`=?',
         nickname,
         (error, result) => {
+            // console.log(11111111111111111111111111);
             if(error) {
                 // 如果错误，让回调函数处理错误
                 return callback(error)

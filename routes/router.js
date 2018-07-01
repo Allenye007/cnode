@@ -11,11 +11,11 @@ const userCtrl = require('../controllers/user');
 // 配置路由
 router.get('/', indexCtrl.showIndex);
 
-router.get('/signin', (req, res) => {
-    res.send('asdds');
-    // console.log(req.query);
-    console.log(req.params)
-})
+// router.get('/signin', (req, res) => {
+//     res.send('asdds');
+//     // console.log(req.query);
+//     console.log(req.params)
+// })
 
 router.get('/signin', userCtrl.renderSignin)
 router.post('/signin', userCtrl.handelSignin)

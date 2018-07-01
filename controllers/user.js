@@ -10,14 +10,15 @@ var userMoudel = require('../models/user')  //  数据库模板
 // 渲染登录页面
 exports.renderSignin = (req, res) => {
     // res.send('renderSignin')
-    res.render('../views/signin.html')
+    res.render('signin.html')//
 }
 // 处理登录页面   需要判断 邮箱/密码   -------------------接口
-exports.handelSignin = (req, res) => { 
+exports.handelSignin = (req, res) => {
     // res.send('handelSignin')
     // 检测邮箱-------------------------------------------------
     // getByEmail(email, callback)   参数(post的数据,  回掉函数)   就是调用函数  getByEmail() 并传参数
-    userMoudel.getByEmail = (req.body.email, (error, user) => {
+    userMoudel.getByEmail(req.body.email, (error, user) => {
+        // console.log(req.body.password);
         if (error) {
             return res.send({
                 msg: '服务器错误'
@@ -32,9 +33,12 @@ exports.handelSignin = (req, res) => {
         }
         // 判断nickname 是否存在
         // 把post的密码加密
-        const password = md5(res.body.password);
+        // console.log(req.body.password);        
+        const password = md5(req.body.password);
         if (password === user.password) {    //   数据库密码与post来的数据一致
-            // 密码一致
+            // 登录成功,设置session (向客户端发送session信息)
+            delete user.password;  //  删除用户的密码  ,  把其他的用户信息作为session信息
+            req.session.userData = user;  //   设置session  并传到客户端
             res.json({
                 code: 200,
                 msg: '登录成功'
@@ -60,62 +64,111 @@ exports.renderSignup = (req, res) => {
 // 处理注册页面  验证注册的一些事情 验证邮箱 用户名  是否存在    -------接口
 exports.handelSignup = (req, res) => {
     // res.send('handelSignup');
-    // console.log(body.req); 
-
-    // 验证邮箱
-    userMoudel.getByEmail = (req.body.email, (error, user) => {
+    console.log(req.body.email);
+    // res.send('hello');
+    // 调用函数
+    userMoudel.getByEmail(req.body.email, (error, user) => {
+        // res.send(user);
         if (error) {
-            return res.send({
-                msg: '服务器错误'
-            })
+            return res.send('服务器错误');
         }
         if (user) {
-            // 邮箱已经存在
-            return res.render('signup.html', {
-                msg: '邮箱已经存在'
-            });
+            // 说明邮箱已存在
+            return res.send('邮箱已存在');
         }
-
-        // 验证nickname
-        userMoudel.getByNickname = (req.body.nickname, (error, user) => {
+        // 调用函数
+        userMoudel.getByNickname(req.body.nickname, (error, user) => {
             if (error) {
-                return res.send({
-                    msg: '服务器错误'
-                })
+                return res.send('服务器错误');
             }
             if (user) {
-                // 昵称已经存在
                 return res.render('signup.html', {
-                    msg: '昵称已经存在'
-                });
+                    msg: '昵称已存在'
+                })
             }
-            // 注册用户   邮箱 昵称 都不存在时  => 插入数据操作
+            // 当  邮箱 昵称 都不存在时 插入数据
+            // 调用函数
             req.body.password = md5(req.body.password);
             req.body.createdAt = new Date();
-            userMoudel.creatUser = (req.body, (error, isOk) => {
+            userMoudel.creatUser(req.body, (error, isOk) => {
                 if (error) {
-                    return res.send({
-                        msg: '服务器错误'
-                    })
+                    return res.render('服务器错误');
                 }
                 if (isOk) {
-                    res.json({
-                        code: 200,
-                        msg: '注册成功'
-                    })
+                    // res.json({
+                    //     code: 200,
+                    //     msg: '注册成功'
+                    // })
                     res.redirect('/signin');
                 } else {
-                    res.json({
-                        code: 401,
-                        msg: '注册失败'
-                    })
+                    // res.json({
+                    //     code: 401,
+                    //     msg: '注册失败'
+                    // })
                     res.render('signup.html', {
-                        msg:'失败'
+                        msg: '注册失败'
                     })
                 }
             })
         })
     })
+    // 验证邮箱
+    // userMoudel.getByEmail = (req.body.email, (error, user) => {
+    //     console.log(error);
+
+    //     if (error) {
+    //         return res.send({
+    //             msg: '服务器错误'
+    //         })
+    //     }
+
+    //     if (user) {
+    //         // 邮箱已经存在
+    //         return res.render('signup.html', {
+    //             msg: '邮箱已经存在'
+    //         });
+    //     }
+
+    //     // 验证nickname
+    //     userMoudel.getByNickname = (req.body.nickname, (error, user) => {
+    //         if (error) {
+    //             return res.send({
+    //                 msg: '服务器错误'
+    //             })
+    //         }
+    //         if (user) {
+    //             // 昵称已经存在
+    //             return res.render('signup.html', {
+    //                 msg: '昵称已经存在'
+    //             });
+    //         }
+    //         // 注册用户   邮箱 昵称 都不存在时  => 插入数据操作
+    //         req.body.password = md5(req.body.password);
+    //         req.body.createdAt = new Date();
+    //         userMoudel.creatUser = (req.body, (error, isOk) => {
+    //             if (error) {
+    //                 return res.send({
+    //                     msg: '服务器错误'
+    //                 })
+    //             }
+    //             if (isOk) {
+    //                 res.json({
+    //                     code: 200,
+    //                     msg: '注册成功'
+    //                 })
+    //                 res.redirect('/signin');
+    //             } else {
+    //                 res.json({
+    //                     code: 401,
+    //                     msg: '注册失败'
+    //                 })
+    //                 res.render('signup.html', {
+    //                     msg:'失败'
+    //                 })
+    //             }
+    //         })
+    //     })
+    // })
     // db.query(
     //     'select * from `users` where `email`=?',
     //     req.body.email,

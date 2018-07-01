@@ -37,6 +37,7 @@
       </form>
       <ul class="nav navbar-nav navbar-right">
         <!-- 如果用户登陆了，就显示下面的内容 -->
+        <!-- 判断有没有session(判断用户是否登录),显示下面内容 -->
         {{ if user }}
         <a class="btn btn-default navbar-btn" href="/topic/create">发起</a>
         <li class="dropdown">
@@ -52,7 +53,7 @@
           </ul>
         </li>
         {{ else }}
-        <!-- 否则显示这些内容 -->
+        <!-- 否则显示这些内容     没有登录-->
         <!-- 改变标识 -->
         <a class="btn btn-primary navbar-btn" href="/signin">登录</a>   
         <a class="btn btn-success navbar-btn" href="/signup">注册</a>

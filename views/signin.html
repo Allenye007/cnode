@@ -37,20 +37,22 @@
       <p>没有账号? <a href="/signup">点击创建</a>.</p>
     </div>
   </div>
-  <script src="../node_modules/jquery/dist/jquery.min.js"></script>
+  <script src="../node_modules/jQuery/tmp/jquery.js"></script>
   <script>
     $('#signin_form').on('submit', function (e) {
       e.preventDefault()
       alert(1)
       // 获取表单数据
       var formData = $(this).serialize();
-      console.log(formData);
+      // var data = $(this).
+      // console.log(formData);
       // 发送AJAX请求
       $.post('/signin', formData, function (resultData) {
-        // console.log(resultData);
+        console.log(00)
+        console.log(resultData);
         if(resultData.code === 200) {
           // 登录成功
-          location.href = ''
+          location.href = '/'
         }
       })
     })
